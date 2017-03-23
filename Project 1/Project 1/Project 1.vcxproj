@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChildView.h" />
+    <ClInclude Include="graphics\OpenGLWnd.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Project 1.h" />
     <ClInclude Include="Resource.h" />
@@ -197,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChildView.cpp" />
+    <ClCompile Include="graphics\OpenGLWnd.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Project 1.cpp" />
     <ClCompile Include="SGNode.cpp" />
