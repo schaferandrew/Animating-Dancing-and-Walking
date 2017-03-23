@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "Project 1.h"
 #include "ChildView.h"
+#include "SGPolygon.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,6 +16,7 @@
 
 CChildView::CChildView()
 {
+	CreateSceneGraph();
 }
 
 CChildView::~CChildView()
@@ -22,7 +24,7 @@ CChildView::~CChildView()
 }
 
 
-BEGIN_MESSAGE_MAP(CChildView, CWnd)
+BEGIN_MESSAGE_MAP(CChildView, COpenGLWnd)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
@@ -32,7 +34,7 @@ END_MESSAGE_MAP()
 
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 
 {
-	if (!CWnd::PreCreateWindow(cs))
+	if (!COpenGLWnd::PreCreateWindow(cs))
 		return FALSE;
 
 	cs.dwExStyle |= WS_EX_CLIENTEDGE;
@@ -43,12 +45,27 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-void CChildView::OnPaint() 
+
+void CChildView::CreateSceneGraph()
 {
-	CPaintDC dc(this); // device context for painting
-	
-	// TODO: Add your message handler code here
-	
-	// Do not call CWnd::OnPaint() for painting messages
+	CSGPolygon *poly = new CSGPolygon();
+
+	CGrVector a(0, 0, 2.5);
+	CGrVector b(2.5, 0, -2.5);
+	CGrVector c(-2.5, 0, -2.5);
+	CGrVector d(0, 4, 0);
+
+	poly->AddNormal(CGrVector(0.861411, 0.269191, 0.430706));
+	poly->AddVertex(d);
+	poly->AddVertex(a);
+	poly->AddVertex(b);
+
+	m_scenegraph = poly;
 }
 
+void CChildView::OnGLDraw(CDC* pDC)
+{
+	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_scenegraph->Render();
+}

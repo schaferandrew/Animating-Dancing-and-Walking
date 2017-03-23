@@ -5,10 +5,13 @@
 
 #pragma once
 
+#include "graphics/OpenGLWnd.h"
+#include "SGNode.h"
+#include "SGRotationTranslation.h"
 
 // CChildView window
 
-class CChildView : public CWnd
+class CChildView : public COpenGLWnd
 {
 // Construction
 public:
@@ -29,8 +32,12 @@ public:
 	virtual ~CChildView();
 
 	// Generated message map functions
+private:
+	void CreateSceneGraph();
+	CSGPtr<CSGNode> m_scenegraph;
 protected:
-	afx_msg void OnPaint();
 	DECLARE_MESSAGE_MAP()
+public:
+	void OnGLDraw(CDC* pDC);
 };
 
