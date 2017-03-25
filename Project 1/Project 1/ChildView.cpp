@@ -1,4 +1,3 @@
-
 // ChildView.cpp : implementation of the CChildView class
 //
 
@@ -52,54 +51,142 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::CreateSceneGraph()
 {
-	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
 	CSGPtr<CSGRotationTranslation> rt = new CSGRotationTranslation();
 
-	CGrVector a(0, 0, 2.5);
-	CGrVector b(2.5, 0, -2.5);
-	CGrVector c(-2.5, 0, -2.5);
-	CGrVector d(0, 4, 0);
+	CGrVector a(0, 0, 0);
+	CGrVector b(2.5, 0, 0);
+	CGrVector c(0, 2.5, 0);
+	CGrVector d(0, 0, 2.5);
+	CGrVector e(2.5, 2.5, 0);
+	CGrVector f(0, 2.5, 2.5);
+	CGrVector g(2.5, 0, 2.5);
+	CGrVector h(2.5, 2.5, 2.5);
 
-	poly1->AddVertex(c);
+	poly1->AddVertex(a);//"Bottom" of the cube
 	poly1->AddVertex(b);
-	poly1->AddVertex(a);
+	poly1->AddVertex(e);
+	poly1->AddVertex(c);
 	poly1->ComputeNormal();
 
-	poly2->AddVertex(d);
-	poly2->AddVertex(a);
+	poly2->AddVertex(a);//"front" of the cube
 	poly2->AddVertex(b);
+	poly2->AddVertex(g);
+	poly2->AddVertex(d);
 	poly2->ComputeNormal();
 
-	poly3->AddVertex(d);
-	poly3->AddVertex(b);
+	poly3->AddVertex(a); //"left" of the cube
 	poly3->AddVertex(c);
+	poly3->AddVertex(f);
+	poly3->AddVertex(d);
 	poly3->ComputeNormal();
 
-	poly4->AddVertex(d);
-	poly4->AddVertex(c);
-	poly4->AddVertex(a);
+	poly4->AddVertex(b); //"right" of the cube
+	poly4->AddVertex(e);
+	poly4->AddVertex(h);
+	poly4->AddVertex(g);
 	poly4->ComputeNormal();
+
+	poly5->AddVertex(c); //"back" of the cube
+	poly5->AddVertex(e);
+	poly5->AddVertex(h);
+	poly5->AddVertex(f);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(d); //"top" of the cube
+	poly6->AddVertex(f);
+	poly6->AddVertex(h);
+	poly6->AddVertex(g);
+	poly6->ComputeNormal();
 
 	rt->AddChild(poly1);
 	rt->AddChild(poly2);
 	rt->AddChild(poly3);
 	rt->AddChild(poly4);
+	rt->AddChild(poly5);
+	rt->AddChild(poly6);
+
+	CSGPtr<CSGPolygon> rect1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> rect2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> rect3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> rect4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> rect5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> rect6 = new CSGPolygon();
+	CSGPtr<CSGRotationTranslation> rect = new CSGRotationTranslation();
+
+	CGrVector one(0, 0, 0);
+	CGrVector two(3, 0, 0);
+	CGrVector three(0, 1, 0);
+	CGrVector four(0, 0, 1);
+	CGrVector five(3, 1, 0);
+	CGrVector six(0, 1, 1);
+	CGrVector seven(3, 0, 1);
+	CGrVector eight(3, 1, 1);
+
+	rect1->AddVertex(one);//"Bottom"
+	rect1->AddVertex(two);
+	rect1->AddVertex(five);
+	rect1->AddVertex(three);
+	rect1->ComputeNormal();
+
+	rect2->AddVertex(one);//"front"
+	rect2->AddVertex(two);
+	rect2->AddVertex(seven);
+	rect2->AddVertex(four);
+	rect2->ComputeNormal();
+
+	rect3->AddVertex(one); //"left"
+	rect3->AddVertex(three);
+	rect3->AddVertex(six);
+	rect3->AddVertex(four);
+	rect3->ComputeNormal();
+
+	rect4->AddVertex(two); //"right"
+	rect4->AddVertex(five);
+	rect4->AddVertex(eight);
+	rect4->AddVertex(seven);
+	rect4->ComputeNormal();
+
+	rect5->AddVertex(three); //"back"
+	rect5->AddVertex(five);
+	rect5->AddVertex(eight);
+	rect5->AddVertex(six);
+	rect5->ComputeNormal();
+
+	rect6->AddVertex(four); //"top"
+	rect6->AddVertex(six);
+	rect6->AddVertex(eight);
+	rect6->AddVertex(seven);
+	rect6->ComputeNormal();
+
+	rect->AddChild(rect1);
+	rect->AddChild(rect2);
+	rect->AddChild(rect3);
+	rect->AddChild(rect4);
+	rect->AddChild(rect5);
+	rect->AddChild(rect6);
 
 	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt1 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt2 = new CSGRotationTranslation();
+	//CSGPtr<CSGRotationTranslation> rt3 = new CSGRotationTranslation();
 
 	root->AddChild(rt1);
 	root->AddChild(rt2);
+	//root->AddChild(rt3);
 
 	rt1->AddChild(rt);
-	rt2->AddChild(rt);
+	rt2->AddChild(rect);
+	//rt3->AddChild(rect);
 
 	rt1->SetTranslate(5, 0, 0);
 	rt2->SetTranslate(-5, 0, 0);
+	//rt3->SetTranslate(0, 0, 0);
 
 	m_scenegraph = root;
 	m_hook1 = rt1;
