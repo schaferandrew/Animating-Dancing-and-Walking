@@ -41,3 +41,20 @@ void CSGPolygon::Render()
     glEnd();
 }
 
+void CSGPolygon::ComputeNormal()
+{
+	CGrVector p1 = m_vertices[0];
+	CGrVector p2 = m_vertices[1];
+	CGrVector p3 = m_vertices[2];
+
+	CGrVector U = p2 - p1;
+	CGrVector V = p3 - p1;
+
+	CGrVector Normal;
+	Normal.X((U.Y() * V.Z()) - (U.Z() * V.Y()));
+	Normal.Y((U.Z() * V.X()) - (U.X() * V.Z()));
+	Normal.Z((U.X() * V.Y()) - (U.Y() * V.X()));
+	Normal.Normalize();
+
+	this->AddNormal(Normal);
+}

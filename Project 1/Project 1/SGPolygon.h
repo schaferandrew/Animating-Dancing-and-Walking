@@ -13,6 +13,7 @@ public:
     ~CSGPolygon(void);
 
     virtual void Render();
+	void ComputeNormal();
 
     void AddVertex(const CGrVector &v) {m_vertices.push_back(v);}
     void AddNormal(const CGrVector &n) {m_normals.push_back(n);}
