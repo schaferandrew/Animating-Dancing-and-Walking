@@ -35,9 +35,16 @@ public:
 private:
 	void CreateSceneGraph();
 	CSGPtr<CSGNode> m_scenegraph;
+
+	double m_spinAngle;
+	UINT_PTR m_spinTimer;
+	CSGPtr<CSGRotationTranslation> m_hook1;
+	CSGPtr<CSGRotationTranslation> m_hook2;
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void OnGLDraw(CDC* pDC);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnAnimationStart();
 };
 

@@ -16,6 +16,8 @@ public:
 	void ComputeNormal();
 
     void AddVertex(const CGrVector &v) {m_vertices.push_back(v);}
+	void AddVertex(double x, double y, double z);
+
     void AddNormal(const CGrVector &n) {m_normals.push_back(n);}
     void AddTexCoord(const CGrVector &t) {m_tvertices.push_back(t);}
     void SetTexture(CGrTexture *texture) {m_texture = texture;}

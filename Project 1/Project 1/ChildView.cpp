@@ -16,6 +16,8 @@
 
 CChildView::CChildView()
 {
+	m_spinAngle = 0;
+	m_spinTimer = 0;
 	CreateSceneGraph();
 }
 
@@ -26,6 +28,8 @@ CChildView::~CChildView()
 
 BEGIN_MESSAGE_MAP(CChildView, COpenGLWnd)
 	ON_WM_PAINT()
+	ON_WM_TIMER()
+	ON_COMMAND(ID_ANIMATION_START, &CChildView::OnAnimationStart)
 END_MESSAGE_MAP()
 
 
@@ -84,8 +88,22 @@ void CChildView::CreateSceneGraph()
 	rt->AddChild(poly3);
 	rt->AddChild(poly4);
 
-	m_scenegraph = rt;
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rt1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rt2 = new CSGRotationTranslation();
 
+	root->AddChild(rt1);
+	root->AddChild(rt2);
+
+	rt1->AddChild(rt);
+	rt2->AddChild(rt);
+
+	rt1->SetTranslate(5, 0, 0);
+	rt2->SetTranslate(-5, 0, 0);
+
+	m_scenegraph = root;
+	m_hook1 = rt1;
+	m_hook2 = rt2;
 }
 
 void CChildView::OnGLDraw(CDC* pDC)
@@ -134,5 +152,33 @@ void CChildView::OnGLDraw(CDC* pDC)
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 
+	//Animation
+	m_hook1->SetRotate(m_spinAngle, 0, 1, 0);
+	m_hook2->SetRotate(-m_spinAngle, 0, 0, 1);
+
 	m_scenegraph->Render();
+}
+
+void CChildView::OnTimer(UINT_PTR nIDEvent)
+{
+	m_spinAngle += 5;		// 5 degrees every 30ms about
+	Invalidate();
+
+	COpenGLWnd::OnTimer(nIDEvent);
+}
+
+
+void CChildView::OnAnimationStart()
+{
+	if (m_spinTimer == 0)
+	{
+		// Create the timer
+		m_spinTimer = SetTimer(1, 30, NULL);
+	}
+	else
+	{
+		// Destroy the timer
+		KillTimer(m_spinTimer);
+		m_spinTimer = 0;
+	}
 }

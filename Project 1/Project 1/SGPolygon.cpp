@@ -41,6 +41,12 @@ void CSGPolygon::Render()
     glEnd();
 }
 
+void CSGPolygon::AddVertex(double x, double y, double z)
+{
+	CGrVector v(x, y, z);
+	m_vertices.push_back(v);
+}
+
 void CSGPolygon::ComputeNormal()
 {
 	CGrVector p1 = m_vertices[0];
