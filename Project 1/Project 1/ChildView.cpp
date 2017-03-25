@@ -172,41 +172,45 @@ void CChildView::CreateSceneGraph()
 	rect->AddChild(rect6);
 
 	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rt1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> mainbody = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt2 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt3 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt4 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rt5 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> neck = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> head = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> leftarm1 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> leftarm2 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rightarm1 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rightarm2 = new CSGRotationTranslation();
 
-	root->AddChild(rt1);
-	root->AddChild(rt2);
-	root->AddChild(rt3);
-	root->AddChild(rt4);
-	root->AddChild(rt5);
-	//root->AddChild(arm1);
+	root->AddChild(mainbody);
+	//root->AddChild(rt2);
+	//root->AddChild(rt3);
+	//root->AddChild(rt4);
+	//root->AddChild(rt5);
+	root->AddChild(head);
 	root->AddChild(leftarm1);
 	root->AddChild(rightarm1);
 
-	rt1->AddChild(rt);
+	mainbody->AddChild(rt);
 	rt2->AddChild(rt);
 	rt3->AddChild(rt);
 	rt4->AddChild(rt);
-	rt5->AddChild(rt);
+	head->AddChild(rt);
+	neck->AddChild(rect);
 	leftarm1->AddChild(rect);
 	leftarm2->AddChild(rect);
 	rightarm1->AddChild(rect);
 	rightarm2->AddChild(rect);
 	
 
-	rt1->SetTranslate(0, 0, 0);
+	mainbody->SetTranslate(0, 0, 0);
 	rt2->SetTranslate(2.5, 0, 0);
 	rt3->SetTranslate(0, 2.5, 0);
 	rt4->SetTranslate(2.5, 2.5, 0);
-	rt5->SetTranslate(1.25, 5, 0);
+	head->SetTranslate(1.25, 5.5, 0);
+	neck->SetTranslate(1.25, -1, 0);
+	neck->SetRotate(90, 0, 0, 1);
 	leftarm1->SetTranslate(-2.5, 2.5, 0);
 	leftarm2->SetTranslate(-2.5, -1, 0);
 	leftarm2->SetRotate(20, 0, 0, 1);
@@ -215,8 +219,12 @@ void CChildView::CreateSceneGraph()
 	rightarm2->SetRotate(20, 0, 0, 1);
 	leftarm1->AddChild(leftarm2);
 	rightarm1->AddChild(rightarm2);
+	mainbody->AddChild(rt2);
+	mainbody->AddChild(rt3);
+	mainbody->AddChild(rt4);
+	head->AddChild(neck);
 	m_scenegraph = root;
-	m_hook1 = leftarm1;
+	m_hook1 = head;
 	m_hook2 = rightarm1;
 }
 
