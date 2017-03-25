@@ -51,7 +51,7 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::CreateSceneGraph()
 {
-CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+    CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
@@ -174,23 +174,50 @@ CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
 	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt1 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rt2 = new CSGRotationTranslation();
-	//CSGPtr<CSGRotationTranslation> rt3 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rt3 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rt4 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rt5 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> leftarm1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> leftarm2 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rightarm1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rightarm2 = new CSGRotationTranslation();
 
 	root->AddChild(rt1);
 	root->AddChild(rt2);
-	//root->AddChild(rt3);
+	root->AddChild(rt3);
+	root->AddChild(rt4);
+	root->AddChild(rt5);
+	//root->AddChild(arm1);
+	root->AddChild(leftarm1);
+	root->AddChild(rightarm1);
 
 	rt1->AddChild(rt);
-	rt2->AddChild(rect);
-	//rt3->AddChild(rect);
+	rt2->AddChild(rt);
+	rt3->AddChild(rt);
+	rt4->AddChild(rt);
+	rt5->AddChild(rt);
+	leftarm1->AddChild(rect);
+	leftarm2->AddChild(rect);
+	rightarm1->AddChild(rect);
+	rightarm2->AddChild(rect);
+	
 
-	rt1->SetTranslate(5, 0, 0);
-	rt2->SetTranslate(-5, 0, 0);
-	//rt3->SetTranslate(0, 0, 0);
-
+	rt1->SetTranslate(0, 0, 0);
+	rt2->SetTranslate(2.5, 0, 0);
+	rt3->SetTranslate(0, 2.5, 0);
+	rt4->SetTranslate(2.5, 2.5, 0);
+	rt5->SetTranslate(1.25, 5, 0);
+	leftarm1->SetTranslate(-2.5, 2.5, 0);
+	leftarm2->SetTranslate(-2.5, -1, 0);
+	leftarm2->SetRotate(20, 0, 0, 1);
+	rightarm1->SetTranslate(5, 2.5, 0);
+	rightarm2->SetTranslate(2.5, 0, 0);
+	rightarm2->SetRotate(20, 0, 0, 1);
+	leftarm1->AddChild(leftarm2);
+	rightarm1->AddChild(rightarm2);
 	m_scenegraph = root;
-	m_hook1 = rt1;
-	m_hook2 = rt2;
+	m_hook1 = leftarm1;
+	m_hook2 = rightarm1;
 }
 
 void CChildView::OnGLDraw(CDC* pDC)
