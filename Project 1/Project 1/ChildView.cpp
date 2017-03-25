@@ -51,7 +51,7 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::CreateSceneGraph()
 {
-    CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+   CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
@@ -182,6 +182,10 @@ void CChildView::CreateSceneGraph()
 	CSGPtr<CSGRotationTranslation> leftarm2 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rightarm1 = new CSGRotationTranslation();
 	CSGPtr<CSGRotationTranslation> rightarm2 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> leftleg1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> leftleg2 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rightleg1 = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> rightleg2 = new CSGRotationTranslation();
 
 	root->AddChild(mainbody);
 	//root->AddChild(rt2);
@@ -191,6 +195,8 @@ void CChildView::CreateSceneGraph()
 	root->AddChild(head);
 	root->AddChild(leftarm1);
 	root->AddChild(rightarm1);
+	root->AddChild(leftleg1);
+	root->AddChild(rightleg1);
 
 	mainbody->AddChild(rt);
 	rt2->AddChild(rt);
@@ -202,6 +208,10 @@ void CChildView::CreateSceneGraph()
 	leftarm2->AddChild(rect);
 	rightarm1->AddChild(rect);
 	rightarm2->AddChild(rect);
+	leftleg1->AddChild(rect);
+	leftleg2->AddChild(rect);
+	rightleg1->AddChild(rect);
+	rightleg2->AddChild(rect);
 	
 
 	mainbody->SetTranslate(0, 0, 0);
@@ -211,6 +221,7 @@ void CChildView::CreateSceneGraph()
 	head->SetTranslate(1.25, 5.5, 0);
 	neck->SetTranslate(1.25, -1, 0);
 	neck->SetRotate(90, 0, 0, 1);
+
 	leftarm1->SetTranslate(-2.5, 2.5, 0);
 	leftarm2->SetTranslate(-2.5, -1, 0);
 	leftarm2->SetRotate(20, 0, 0, 1);
@@ -219,6 +230,17 @@ void CChildView::CreateSceneGraph()
 	rightarm2->SetRotate(20, 0, 0, 1);
 	leftarm1->AddChild(leftarm2);
 	rightarm1->AddChild(rightarm2);
+
+	leftleg1->SetTranslate(1, -2.5, 0);
+	leftleg1->SetRotate(90, 0, 0, 1);
+	leftleg2->SetTranslate(-2.5, 0, 0);
+	//leftleg2->SetRotate(90, 0, 0, 1);
+	rightleg1->SetTranslate(4, -2.5, 0);
+	rightleg1->SetRotate(90, 0, 0, 1);
+	rightleg2->SetTranslate(-2.5, 0, 0);
+
+	leftleg1->AddChild(leftleg2);
+	rightleg1->AddChild(rightleg2);
 	mainbody->AddChild(rt2);
 	mainbody->AddChild(rt3);
 	mainbody->AddChild(rt4);
