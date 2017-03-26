@@ -52,15 +52,13 @@ private:
 	CSGPtr<CSGRotationTranslation> m_hook5;
 	CSGPtr<CSGRotationTranslation> m_hook6;
 	CSGPtr<CSGRotationTranslation> m_hook7;
-	CSGPtr<CSGRotationTranslation> m_hook8;
-	CSGPtr<CSGRotationTranslation> m_hook9;
-	CSGPtr<CSGRotationTranslation> m_hook10;
-	CSGPtr<CSGRotationTranslation> m_hook11;
 	double m_angle1;
 	double m_angle2;
 	double m_angle3;
 	double m_angle4;
 	double m_angle5;
+	double m_angle6;
+	double m_angle7;
 	int m_phase;
 
 protected:

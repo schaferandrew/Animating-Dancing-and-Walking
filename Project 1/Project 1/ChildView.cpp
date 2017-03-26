@@ -21,6 +21,8 @@ CChildView::CChildView()
 	m_angle3 = 0;
 	m_angle4 = 0;
 	m_angle5 = 0;
+	m_angle6 = 0;
+	m_angle7 = 0;
 
 	m_phase = 1;
 
@@ -774,7 +776,7 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Leg()
 	CGrVector g2(1.25, 1.25, 0);
 	CGrVector h2(0, 1.25, 0);
 
-	CSGPtr<CSGRotationTranslation> knee = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> right_knee = new CSGRotationTranslation();
 	CSGPtr<CSGPolygon> elbow1 = new CSGPolygon(); //it's called elbow because I'm too lazy to switch it.
 	CSGPtr<CSGPolygon> elbow2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> elbow3 = new CSGPolygon();
@@ -818,12 +820,12 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Leg()
 	elbow6->AddVertex(a2);
 	elbow6->ComputeNormal();
 
-	knee->AddChild(elbow1);
-	knee->AddChild(elbow2);
-	knee->AddChild(elbow3);
-	knee->AddChild(elbow4);
-	knee->AddChild(elbow5);
-	knee->AddChild(elbow6);
+	right_knee->AddChild(elbow1);
+	right_knee->AddChild(elbow2);
+	right_knee->AddChild(elbow3);
+	right_knee->AddChild(elbow4);
+	right_knee->AddChild(elbow5);
+	right_knee->AddChild(elbow6);
 
 	CSGPtr<CSGRotationTranslation> legbot = new CSGRotationTranslation();
 	CSGPtr<CSGPolygon> lega = new CSGPolygon();
@@ -878,12 +880,12 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Leg()
 
 
 	leg->SetTranslate(-0.25, -4, -0.25);
-	knee->SetTranslate(-.15, -0.75, -.1);
+	right_knee->SetTranslate(-.15, -0.75, -.1);
 	legbot->SetTranslate(0.15, -4, .1);
 
 	root->AddChild(leg);
-	leg->AddChild(knee);
-	knee->AddChild(legbot);
+	leg->AddChild(right_knee);
+	right_knee->AddChild(legbot);
 	leg->SetTranslate(-0.25, -4, -0.25);
 
 	root->AddChild(leg);
@@ -1024,6 +1026,7 @@ void CChildView::OnGLDraw(CDC* pDC)
 	if (m_phase == 1 || m_phase == 2){
 		m_hook2->SetRotate(m_angle1, 0, 1., 0);
 		m_hook3->SetRotate(m_angle3, 1, 0, 0);
+		m_hook6->SetRotate(m_angle6, 0., 0., -1.);
 	}
 	else if (m_phase == 3 || m_phase == 4) {
 		m_hook2->SetRotate(m_angle1, 0, 0, -1);
@@ -1057,6 +1060,7 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 			m_angle3 += 5;
 		}
 		m_angle5 += 1;
+		m_angle6 += 1;
 	}
 	else if (m_phase == 2 || m_phase == 4 || m_phase == 6) {
 		if (m_angle1 >= 0 && m_angle3 <= 0) {
@@ -1076,6 +1080,7 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		}
 
 		m_angle5 -= 1;
+		m_angle6 -= 1;
 	}
 	/*m_spinAngle += 5;		// 5 degrees every 30ms about
 
