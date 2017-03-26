@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChildView.h" />
+    <ClInclude Include="graphics\GrCamera.h" />
     <ClInclude Include="graphics\GrTexture.h" />
     <ClInclude Include="graphics\GrVector.h" />
     <ClInclude Include="graphics\OpenGLWnd.h" />
@@ -200,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChildView.cpp" />
+    <ClCompile Include="graphics\GrCamera.cpp" />
     <ClCompile Include="graphics\GrTexture.cpp" />
     <ClCompile Include="graphics\OpenGLWnd.cpp" />
     <ClCompile Include="MainFrm.cpp" />

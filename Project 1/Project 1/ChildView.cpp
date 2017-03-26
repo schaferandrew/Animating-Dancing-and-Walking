@@ -18,6 +18,8 @@ CChildView::CChildView()
 	m_spinAngle = 0;
 	m_spinTimer = 0;
 	CreateSceneGraph();
+	m_camera.Set(20, 10, 50, 0, 0, 0, 0, 1, 0);
+
 }
 
 CChildView::~CChildView()
@@ -29,6 +31,8 @@ BEGIN_MESSAGE_MAP(CChildView, COpenGLWnd)
 	ON_WM_PAINT()
 	ON_WM_TIMER()
 	ON_COMMAND(ID_ANIMATION_START, &CChildView::OnAnimationStart)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -48,206 +52,688 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-
-void CChildView::CreateSceneGraph()
+CSGPtr<CSGRotationTranslation> CChildView::Create_Body()
 {
-   CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CGrVector a(0, 0, 3);
+	CGrVector b(5, 0, 3);
+	CGrVector c(5, 8, 3);
+	CGrVector d(0, 8, 3);
+	CGrVector e(0, 0, 0);
+	CGrVector f(5, 0, 0);
+	CGrVector g(5, 8, 0);
+	CGrVector h(0, 8, 0);
+
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
 	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
-	CSGPtr<CSGRotationTranslation> rt = new CSGRotationTranslation();
 
-	CGrVector a(0, 0, 0);
-	CGrVector b(2.5, 0, 0);
-	CGrVector c(0, 2.5, 0);
-	CGrVector d(0, 0, 2.5);
-	CGrVector e(2.5, 2.5, 0);
-	CGrVector f(0, 2.5, 2.5);
-	CGrVector g(2.5, 0, 2.5);
-	CGrVector h(2.5, 2.5, 2.5);
-
-	poly1->AddVertex(a);//"Bottom" of the cube
+	poly1->AddVertex(a);
 	poly1->AddVertex(b);
-	poly1->AddVertex(e);
 	poly1->AddVertex(c);
+	poly1->AddVertex(d);
 	poly1->ComputeNormal();
 
-	poly2->AddVertex(a);//"front" of the cube
+	poly2->AddVertex(c);
 	poly2->AddVertex(b);
+	poly2->AddVertex(f);
 	poly2->AddVertex(g);
-	poly2->AddVertex(d);
 	poly2->ComputeNormal();
 
-	poly3->AddVertex(a); //"left" of the cube
-	poly3->AddVertex(c);
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
 	poly3->AddVertex(f);
-	poly3->AddVertex(d);
+	poly3->AddVertex(e);
 	poly3->ComputeNormal();
 
-	poly4->AddVertex(b); //"right" of the cube
-	poly4->AddVertex(e);
+	poly4->AddVertex(d);
 	poly4->AddVertex(h);
-	poly4->AddVertex(g);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
 	poly4->ComputeNormal();
 
-	poly5->AddVertex(c); //"back" of the cube
-	poly5->AddVertex(e);
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
 	poly5->AddVertex(h);
-	poly5->AddVertex(f);
 	poly5->ComputeNormal();
 
-	poly6->AddVertex(d); //"top" of the cube
+	poly6->AddVertex(e);
 	poly6->AddVertex(f);
-	poly6->AddVertex(h);
-	poly6->AddVertex(g);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
 	poly6->ComputeNormal();
 
-	rt->AddChild(poly1);
-	rt->AddChild(poly2);
-	rt->AddChild(poly3);
-	rt->AddChild(poly4);
-	rt->AddChild(poly5);
-	rt->AddChild(poly6);
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
 
-	CSGPtr<CSGPolygon> rect1 = new CSGPolygon();
-	CSGPtr<CSGPolygon> rect2 = new CSGPolygon();
-	CSGPtr<CSGPolygon> rect3 = new CSGPolygon();
-	CSGPtr<CSGPolygon> rect4 = new CSGPolygon();
-	CSGPtr<CSGPolygon> rect5 = new CSGPolygon();
-	CSGPtr<CSGPolygon> rect6 = new CSGPolygon();
-	CSGPtr<CSGRotationTranslation> rect = new CSGRotationTranslation();
+	return root;
+}
 
-	CGrVector one(0, 0, 0);
-	CGrVector two(3, 0, 0);
-	CGrVector three(0, 1, 0);
-	CGrVector four(0, 0, 1);
-	CGrVector five(3, 1, 0);
-	CGrVector six(0, 1, 1);
-	CGrVector seven(3, 0, 1);
-	CGrVector eight(3, 1, 1);
-
-	rect1->AddVertex(one);//"Bottom"
-	rect1->AddVertex(two);
-	rect1->AddVertex(five);
-	rect1->AddVertex(three);
-	rect1->ComputeNormal();
-
-	rect2->AddVertex(one);//"front"
-	rect2->AddVertex(two);
-	rect2->AddVertex(seven);
-	rect2->AddVertex(four);
-	rect2->ComputeNormal();
-
-	rect3->AddVertex(one); //"left"
-	rect3->AddVertex(three);
-	rect3->AddVertex(six);
-	rect3->AddVertex(four);
-	rect3->ComputeNormal();
-
-	rect4->AddVertex(two); //"right"
-	rect4->AddVertex(five);
-	rect4->AddVertex(eight);
-	rect4->AddVertex(seven);
-	rect4->ComputeNormal();
-
-	rect5->AddVertex(three); //"back"
-	rect5->AddVertex(five);
-	rect5->AddVertex(eight);
-	rect5->AddVertex(six);
-	rect5->ComputeNormal();
-
-	rect6->AddVertex(four); //"top"
-	rect6->AddVertex(six);
-	rect6->AddVertex(eight);
-	rect6->AddVertex(seven);
-	rect6->ComputeNormal();
-
-	rect->AddChild(rect1);
-	rect->AddChild(rect2);
-	rect->AddChild(rect3);
-	rect->AddChild(rect4);
-	rect->AddChild(rect5);
-	rect->AddChild(rect6);
+CSGPtr<CSGRotationTranslation> CChildView::Create_Left_Arm()
+{
+	//Vertex of arm hook
+	CGrVector a(0, 0, 0.5);
+	CGrVector b(1, 0, 0.5);
+	CGrVector c(1, 1, 0.5);
+	CGrVector d(0, 1, 0.5);
+	CGrVector e(0, 0, 0);
+	CGrVector f(1, 0, 0);
+	CGrVector g(1, 1, 0);
+	CGrVector h(0, 1, 0);
 
 	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> mainbody = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rt2 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rt3 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rt4 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> neck = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> head = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> leftarm1 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> leftarm2 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rightarm1 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rightarm2 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> leftleg1 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> leftleg2 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rightleg1 = new CSGRotationTranslation();
-	CSGPtr<CSGRotationTranslation> rightleg2 = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
 
-	root->AddChild(mainbody);
-	//root->AddChild(rt2);
-	//root->AddChild(rt3);
-	//root->AddChild(rt4);
-	//root->AddChild(rt5);
-	root->AddChild(head);
-	root->AddChild(leftarm1);
-	root->AddChild(rightarm1);
-	root->AddChild(leftleg1);
-	root->AddChild(rightleg1);
+	poly1->AddVertex(a);
+	poly1->AddVertex(b);
+	poly1->AddVertex(c);
+	poly1->AddVertex(d);
+	poly1->ComputeNormal();
 
-	mainbody->AddChild(rt);
-	rt2->AddChild(rt);
-	rt3->AddChild(rt);
-	rt4->AddChild(rt);
-	head->AddChild(rt);
-	neck->AddChild(rect);
-	leftarm1->AddChild(rect);
-	leftarm2->AddChild(rect);
-	rightarm1->AddChild(rect);
-	rightarm2->AddChild(rect);
-	leftleg1->AddChild(rect);
-	leftleg2->AddChild(rect);
-	rightleg1->AddChild(rect);
-	rightleg2->AddChild(rect);
+	poly2->AddVertex(c);
+	poly2->AddVertex(b);
+	poly2->AddVertex(f);
+	poly2->AddVertex(g);
+	poly2->ComputeNormal();
+
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
+	poly3->AddVertex(f);
+	poly3->AddVertex(e);
+	poly3->ComputeNormal();
+
+	poly4->AddVertex(d);
+	poly4->AddVertex(h);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
+	poly4->ComputeNormal();
+
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
+	poly5->AddVertex(h);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(e);
+	poly6->AddVertex(f);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
+	poly6->ComputeNormal();
+
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
+
+
+	//shoulder
+	CGrVector a1(0, 0, 1);
+	CGrVector b1(0.5, 0, 1);
+	CGrVector c1(0.5, 4, 1);
+	CGrVector d1(0, 4, 1);
+	CGrVector e1(0, 0, 0);
+	CGrVector f1(0.5, 0, 0);
+	CGrVector g1(0.5, 4, 0);
+	CGrVector h1(0, 4, 0);
+
+	CSGPtr<CSGRotationTranslation> shoulder = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> shoulder1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder6 = new CSGPolygon();
+
+	shoulder1->AddVertex(a1);
+	shoulder1->AddVertex(b1);
+	shoulder1->AddVertex(c1);
+	shoulder1->AddVertex(d1);
+	shoulder1->ComputeNormal();
+
+	shoulder2->AddVertex(c1);
+	shoulder2->AddVertex(b1);
+	shoulder2->AddVertex(f1);
+	shoulder2->AddVertex(g1);
+	shoulder2->ComputeNormal();
+
+	shoulder3->AddVertex(h1);
+	shoulder3->AddVertex(g1);
+	shoulder3->AddVertex(f1);
+	shoulder3->AddVertex(e1);
+	shoulder3->ComputeNormal();
+
+	shoulder4->AddVertex(d1);
+	shoulder4->AddVertex(h1);
+	shoulder4->AddVertex(e1);
+	shoulder4->AddVertex(a1);
+	shoulder4->ComputeNormal();
+
+	shoulder5->AddVertex(d1);
+	shoulder5->AddVertex(c1);
+	shoulder5->AddVertex(g1);
+	shoulder5->AddVertex(h1);
+	shoulder5->ComputeNormal();
+
+	shoulder6->AddVertex(e1);
+	shoulder6->AddVertex(f1);
+	shoulder6->AddVertex(b1);
+	shoulder6->AddVertex(a1);
+	shoulder6->ComputeNormal();
+
+	shoulder->AddChild(shoulder1);
+	shoulder->AddChild(shoulder2);
+	shoulder->AddChild(shoulder3);
+	shoulder->AddChild(shoulder4);
+	shoulder->AddChild(shoulder5);
+	shoulder->AddChild(shoulder6);
+
+	shoulder->SetRotate(90, 1, 0, 0);
+	shoulder->SetTranslate(-0.5, 1, 0);
+	root->AddChild(shoulder);
+	m_hook2 = shoulder;
+	return root;
+}
+
+CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Arm()
+{
+	//Vertex of arm hook
+	CGrVector a(0, 0, 0.5);
+	CGrVector b(1, 0, 0.5);
+	CGrVector c(1, 1, 0.5);
+	CGrVector d(0, 1, 0.5);
+	CGrVector e(0, 0, 0);
+	CGrVector f(1, 0, 0);
+	CGrVector g(1, 1, 0);
+	CGrVector h(0, 1, 0);
+
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
+
+	poly1->AddVertex(a);
+	poly1->AddVertex(b);
+	poly1->AddVertex(c);
+	poly1->AddVertex(d);
+	poly1->ComputeNormal();
+
+	poly2->AddVertex(c);
+	poly2->AddVertex(b);
+	poly2->AddVertex(f);
+	poly2->AddVertex(g);
+	poly2->ComputeNormal();
+
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
+	poly3->AddVertex(f);
+	poly3->AddVertex(e);
+	poly3->ComputeNormal();
+
+	poly4->AddVertex(d);
+	poly4->AddVertex(h);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
+	poly4->ComputeNormal();
+
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
+	poly5->AddVertex(h);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(e);
+	poly6->AddVertex(f);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
+	poly6->ComputeNormal();
+
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
+
+
+	//shoulder
+	CGrVector a1(0, 0, 1);
+	CGrVector b1(0.5, 0, 1);
+	CGrVector c1(0.5, 4, 1);
+	CGrVector d1(0, 4, 1);
+	CGrVector e1(0, 0, 0);
+	CGrVector f1(0.5, 0, 0);
+	CGrVector g1(0.5, 4, 0);
+	CGrVector h1(0, 4, 0);
+
+	CSGPtr<CSGRotationTranslation> shoulder = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> shoulder1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> shoulder6 = new CSGPolygon();
+
+	shoulder1->AddVertex(a1);
+	shoulder1->AddVertex(b1);
+	shoulder1->AddVertex(c1);
+	shoulder1->AddVertex(d1);
+	shoulder1->ComputeNormal();
+
+	shoulder2->AddVertex(c1);
+	shoulder2->AddVertex(b1);
+	shoulder2->AddVertex(f1);
+	shoulder2->AddVertex(g1);
+	shoulder2->ComputeNormal();
+
+	shoulder3->AddVertex(h1);
+	shoulder3->AddVertex(g1);
+	shoulder3->AddVertex(f1);
+	shoulder3->AddVertex(e1);
+	shoulder3->ComputeNormal();
+
+	shoulder4->AddVertex(d1);
+	shoulder4->AddVertex(h1);
+	shoulder4->AddVertex(e1);
+	shoulder4->AddVertex(a1);
+	shoulder4->ComputeNormal();
+
+	shoulder5->AddVertex(d1);
+	shoulder5->AddVertex(c1);
+	shoulder5->AddVertex(g1);
+	shoulder5->AddVertex(h1);
+	shoulder5->ComputeNormal();
+
+	shoulder6->AddVertex(e1);
+	shoulder6->AddVertex(f1);
+	shoulder6->AddVertex(b1);
+	shoulder6->AddVertex(a1);
+	shoulder6->ComputeNormal();
+
+	shoulder->AddChild(shoulder1);
+	shoulder->AddChild(shoulder2);
+	shoulder->AddChild(shoulder3);
+	shoulder->AddChild(shoulder4);
+	shoulder->AddChild(shoulder5);
+	shoulder->AddChild(shoulder6);
+
+	shoulder->SetRotate(90, 1, 0, 0);
+	shoulder->SetTranslate(0.5, 1, 0);
+	root->AddChild(shoulder);
+	m_hook4 = shoulder;
+	return root;
+}
+
+CSGPtr<CSGRotationTranslation> CChildView::Create_Left_Leg()
+{
+	//Vertex of arm hook
+	CGrVector a(0, 0, 0.5);
+	CGrVector b(0.5, 0, 0.5);
+	CGrVector c(0.5, 0.5, 0.5);
+	CGrVector d(0, 0.5, 0.5);
+	CGrVector e(0, 0, 0);
+	CGrVector f(0.5, 0, 0);
+	CGrVector g(0.5, 0.5, 0);
+	CGrVector h(0, 0.5, 0);
+
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
+
+	poly1->AddVertex(a);
+	poly1->AddVertex(b);
+	poly1->AddVertex(c);
+	poly1->AddVertex(d);
+	poly1->ComputeNormal();
+
+	poly2->AddVertex(c);
+	poly2->AddVertex(b);
+	poly2->AddVertex(f);
+	poly2->AddVertex(g);
+	poly2->ComputeNormal();
+
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
+	poly3->AddVertex(f);
+	poly3->AddVertex(e);
+	poly3->ComputeNormal();
+
+	poly4->AddVertex(d);
+	poly4->AddVertex(h);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
+	poly4->ComputeNormal();
+
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
+	poly5->AddVertex(h);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(e);
+	poly6->AddVertex(f);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
+	poly6->ComputeNormal();
+
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
+
+
+	//shoulder
+	CGrVector a1(0, 0, 1);
+	CGrVector b1(1, 0, 1);
+	CGrVector c1(1, 4, 1);
+	CGrVector d1(0, 4, 1);
+	CGrVector e1(0, 0, 0);
+	CGrVector f1(1, 0, 0);
+	CGrVector g1(1, 4, 0);
+	CGrVector h1(0, 4, 0);
+
+	CSGPtr<CSGRotationTranslation> leg = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> leg1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg6 = new CSGPolygon();
+
+	leg1->AddVertex(a1);
+	leg1->AddVertex(b1);
+	leg1->AddVertex(c1);
+	leg1->AddVertex(d1);
+	leg1->ComputeNormal();
+
+	leg2->AddVertex(c1);
+	leg2->AddVertex(b1);
+	leg2->AddVertex(f1);
+	leg2->AddVertex(g1);
+	leg2->ComputeNormal();
+
+	leg3->AddVertex(h1);
+	leg3->AddVertex(g1);
+	leg3->AddVertex(f1);
+	leg3->AddVertex(e1);
+	leg3->ComputeNormal();
+
+	leg4->AddVertex(d1);
+	leg4->AddVertex(h1);
+	leg4->AddVertex(e1);
+	leg4->AddVertex(a1);
+	leg4->ComputeNormal();
+
+	leg5->AddVertex(d1);
+	leg5->AddVertex(c1);
+	leg5->AddVertex(g1);
+	leg5->AddVertex(h1);
+	leg5->ComputeNormal();
+
+	leg6->AddVertex(e1);
+	leg6->AddVertex(f1);
+	leg6->AddVertex(b1);
+	leg6->AddVertex(a1);
+	leg6->ComputeNormal();
+
+	leg->AddChild(leg1);
+	leg->AddChild(leg2);
+	leg->AddChild(leg3);
+	leg->AddChild(leg4);
+	leg->AddChild(leg5);
+	leg->AddChild(leg6);
+
 	
+	leg->SetTranslate(-0.25, -4, -0.25);
 
-	mainbody->SetTranslate(0, 0, 0);
-	rt2->SetTranslate(2.5, 0, 0);
-	rt3->SetTranslate(0, 2.5, 0);
-	rt4->SetTranslate(2.5, 2.5, 0);
-	head->SetTranslate(1.25, 5.5, 0);
-	neck->SetTranslate(1.25, -1, 0);
-	neck->SetRotate(90, 0, 0, 1);
+	root->AddChild(leg);
+	return root;
+}
 
-	leftarm1->SetTranslate(-2.5, 2.5, 0);
-	leftarm2->SetTranslate(-2.5, -1, 0);
-	leftarm2->SetRotate(20, 0, 0, 1);
-	rightarm1->SetTranslate(5, 2.5, 0);
-	rightarm2->SetTranslate(2.5, 0, 0);
-	rightarm2->SetRotate(20, 0, 0, 1);
-	leftarm1->AddChild(leftarm2);
-	rightarm1->AddChild(rightarm2);
+CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Leg()
+{
+	//Vertex of arm hook
+	CGrVector a(0, 0, 0.5);
+	CGrVector b(0.5, 0, 0.5);
+	CGrVector c(0.5, 0.5, 0.5);
+	CGrVector d(0, 0.5, 0.5);
+	CGrVector e(0, 0, 0);
+	CGrVector f(0.5, 0, 0);
+	CGrVector g(0.5, 0.5, 0);
+	CGrVector h(0, 0.5, 0);
 
-	leftleg1->SetTranslate(1, -2.5, 0);
-	leftleg1->SetRotate(90, 0, 0, 1);
-	leftleg2->SetTranslate(-2.5, 0, 0);
-	//leftleg2->SetRotate(90, 0, 0, 1);
-	rightleg1->SetTranslate(4, -2.5, 0);
-	rightleg1->SetRotate(90, 0, 0, 1);
-	rightleg2->SetTranslate(-2.5, 0, 0);
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
 
-	leftleg1->AddChild(leftleg2);
-	rightleg1->AddChild(rightleg2);
-	mainbody->AddChild(rt2);
-	mainbody->AddChild(rt3);
-	mainbody->AddChild(rt4);
-	head->AddChild(neck);
-	m_scenegraph = root;
-	m_hook1 = head;
-	m_hook2 = rightarm1;
+	poly1->AddVertex(a);
+	poly1->AddVertex(b);
+	poly1->AddVertex(c);
+	poly1->AddVertex(d);
+	poly1->ComputeNormal();
+
+	poly2->AddVertex(c);
+	poly2->AddVertex(b);
+	poly2->AddVertex(f);
+	poly2->AddVertex(g);
+	poly2->ComputeNormal();
+
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
+	poly3->AddVertex(f);
+	poly3->AddVertex(e);
+	poly3->ComputeNormal();
+
+	poly4->AddVertex(d);
+	poly4->AddVertex(h);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
+	poly4->ComputeNormal();
+
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
+	poly5->AddVertex(h);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(e);
+	poly6->AddVertex(f);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
+	poly6->ComputeNormal();
+
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
+
+
+	//shoulder
+	CGrVector a1(0, 0, 1);
+	CGrVector b1(1, 0, 1);
+	CGrVector c1(1, 4, 1);
+	CGrVector d1(0, 4, 1);
+	CGrVector e1(0, 0, 0);
+	CGrVector f1(1, 0, 0);
+	CGrVector g1(1, 4, 0);
+	CGrVector h1(0, 4, 0);
+
+	CSGPtr<CSGRotationTranslation> leg = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> leg1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> leg6 = new CSGPolygon();
+
+	leg1->AddVertex(a1);
+	leg1->AddVertex(b1);
+	leg1->AddVertex(c1);
+	leg1->AddVertex(d1);
+	leg1->ComputeNormal();
+
+	leg2->AddVertex(c1);
+	leg2->AddVertex(b1);
+	leg2->AddVertex(f1);
+	leg2->AddVertex(g1);
+	leg2->ComputeNormal();
+
+	leg3->AddVertex(h1);
+	leg3->AddVertex(g1);
+	leg3->AddVertex(f1);
+	leg3->AddVertex(e1);
+	leg3->ComputeNormal();
+
+	leg4->AddVertex(d1);
+	leg4->AddVertex(h1);
+	leg4->AddVertex(e1);
+	leg4->AddVertex(a1);
+	leg4->ComputeNormal();
+
+	leg5->AddVertex(d1);
+	leg5->AddVertex(c1);
+	leg5->AddVertex(g1);
+	leg5->AddVertex(h1);
+	leg5->ComputeNormal();
+
+	leg6->AddVertex(e1);
+	leg6->AddVertex(f1);
+	leg6->AddVertex(b1);
+	leg6->AddVertex(a1);
+	leg6->ComputeNormal();
+
+	leg->AddChild(leg1);
+	leg->AddChild(leg2);
+	leg->AddChild(leg3);
+	leg->AddChild(leg4);
+	leg->AddChild(leg5);
+	leg->AddChild(leg6);
+
+
+	leg->SetTranslate(-0.25, -4, -0.25);
+
+	root->AddChild(leg);
+	return root;
+}
+
+CSGPtr<CSGRotationTranslation> CChildView::Create_Head()
+{
+	CGrVector a(0, 0, 2);
+	CGrVector b(2, 0, 2);
+	CGrVector c(2, 2, 2);
+	CGrVector d(0, 2, 2);
+	CGrVector e(0, 0, 0);
+	CGrVector f(2, 0, 0);
+	CGrVector g(2, 2, 0);
+	CGrVector h(0, 2, 0);
+
+	CSGPtr<CSGRotationTranslation> root = new CSGRotationTranslation();
+	CSGPtr<CSGPolygon> poly1 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly2 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly3 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly4 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly5 = new CSGPolygon();
+	CSGPtr<CSGPolygon> poly6 = new CSGPolygon();
+
+	poly1->AddVertex(a);
+	poly1->AddVertex(b);
+	poly1->AddVertex(c);
+	poly1->AddVertex(d);
+	poly1->ComputeNormal();
+
+	poly2->AddVertex(c);
+	poly2->AddVertex(b);
+	poly2->AddVertex(f);
+	poly2->AddVertex(g);
+	poly2->ComputeNormal();
+
+	poly3->AddVertex(h);
+	poly3->AddVertex(g);
+	poly3->AddVertex(f);
+	poly3->AddVertex(e);
+	poly3->ComputeNormal();
+
+	poly4->AddVertex(d);
+	poly4->AddVertex(h);
+	poly4->AddVertex(e);
+	poly4->AddVertex(a);
+	poly4->ComputeNormal();
+
+	poly5->AddVertex(d);
+	poly5->AddVertex(c);
+	poly5->AddVertex(g);
+	poly5->AddVertex(h);
+	poly5->ComputeNormal();
+
+	poly6->AddVertex(e);
+	poly6->AddVertex(f);
+	poly6->AddVertex(b);
+	poly6->AddVertex(a);
+	poly6->ComputeNormal();
+
+	root->AddChild(poly1);
+	root->AddChild(poly2);
+	root->AddChild(poly3);
+	root->AddChild(poly4);
+	root->AddChild(poly5);
+	root->AddChild(poly6);
+
+	return root;
+}
+
+
+void CChildView::CreateSceneGraph()
+{
+	CSGPtr<CSGRotationTranslation> body = Create_Body();
+	CSGPtr<CSGRotationTranslation> head = Create_Head();
+	CSGPtr<CSGRotationTranslation> left_arm = Create_Left_Arm();
+	CSGPtr<CSGRotationTranslation> right_arm = Create_Right_Arm();
+	CSGPtr<CSGRotationTranslation> left_leg = Create_Left_Leg();
+	CSGPtr<CSGRotationTranslation> right_leg = Create_Right_Leg();
+	left_arm->SetTranslate(-1.0, 4, 1.5);
+	right_arm->SetTranslate(5.0, 4, 1.5);
+	head->SetTranslate(1.5, 8, 0.3);
+	left_leg->SetTranslate(1, -0.5, 1);
+	right_leg->SetTranslate(3, -0.5, 1);
+	body->AddChild(left_arm);
+	body->AddChild(right_arm);
+	body->AddChild(head);
+	body->AddChild(left_leg);
+	body->AddChild(right_leg);
+	m_scenegraph = body;
+	m_hook1 = left_arm;
+	m_hook3 = right_arm;
+	m_hook5 = head;
+	m_hook6 = left_leg;
 }
 
 void CChildView::OnGLDraw(CDC* pDC)
@@ -258,34 +744,15 @@ void CChildView::OnGLDraw(CDC* pDC)
 	//
 	// Set up the camera
 	//
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	// Determine the screen size so we can determine the aspect ratio
 	int width, height;
 	GetSize(width, height);
-	GLdouble aspectratio = GLdouble(width) / GLdouble(height);
+	m_camera.Apply(width, height);
 
-	// Set the camera parameters
-	gluPerspective(25.,         // Vertical FOV degrees.
-		aspectratio, // The aspect ratio.
-		10.,         // Near clipping 40/130
-		200.);       // Far clipping
+	//
+	// Some standard parameters
+	//
 
-					 // Set the camera location
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	gluLookAt(20., 10., 50.,    // eye x,y,z
-		0., 0., 0.,       // center x,y,z
-		0., 1., 0.);      // Up direction
-
-						  //
-						  // Some standard parameters
-						  //
-
-						  // Enable depth test
+	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 
 	// Enable lighting
@@ -297,9 +764,11 @@ void CChildView::OnGLDraw(CDC* pDC)
 	glEnable(GL_CULL_FACE);
 
 	//Animation
-	m_hook1->SetRotate(m_spinAngle, 0, 1, 0);
-	m_hook2->SetRotate(-m_spinAngle, 0, 0, 1);
-
+	m_hook1->SetRotate(m_spinAngle, 1, 0, 0); //left arm hook
+	m_hook2->SetRotate(-m_spinAngle, 0, 1., 0); //left shoulder hook
+	m_hook3->SetRotate(-m_spinAngle, 1, 0, 0); // right arm hook
+	m_hook4->SetRotate(-m_spinAngle, 0, 1, 0); //right shoulder hook
+	m_hook5->SetRotate(m_spinAngle, 0, 1, 0); //head hook
 	m_scenegraph->Render();
 }
 
@@ -325,4 +794,20 @@ void CChildView::OnAnimationStart()
 		KillTimer(m_spinTimer);
 		m_spinTimer = 0;
 	}
+}
+
+void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	m_camera.MouseDown(point.x, point.y);
+
+	COpenGLWnd::OnLButtonDown(nFlags, point);
+}
+
+
+void CChildView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if (m_camera.MouseMove(point.x, point.y, nFlags))
+		Invalidate();
+
+	COpenGLWnd::OnMouseMove(nFlags, point);
 }

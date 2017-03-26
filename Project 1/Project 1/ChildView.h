@@ -6,6 +6,7 @@
 #pragma once
 
 #include "graphics/OpenGLWnd.h"
+#include "graphics/GrCamera.h"
 #include "SGNode.h"
 #include "SGRotationTranslation.h"
 
@@ -35,16 +36,29 @@ public:
 private:
 	void CreateSceneGraph();
 	CSGPtr<CSGNode> m_scenegraph;
-
+	CGrCamera m_camera;
 	double m_spinAngle;
 	UINT_PTR m_spinTimer;
+	CSGPtr<CSGRotationTranslation> Create_Head();
+	CSGPtr<CSGRotationTranslation> Create_Body();
+	CSGPtr<CSGRotationTranslation> Create_Left_Arm();
+	CSGPtr<CSGRotationTranslation> Create_Right_Arm();
+	CSGPtr<CSGRotationTranslation> Create_Left_Leg();
+	CSGPtr<CSGRotationTranslation> Create_Right_Leg();
 	CSGPtr<CSGRotationTranslation> m_hook1;
 	CSGPtr<CSGRotationTranslation> m_hook2;
+	CSGPtr<CSGRotationTranslation> m_hook3;
+	CSGPtr<CSGRotationTranslation> m_hook4;
+	CSGPtr<CSGRotationTranslation> m_hook5;
+	CSGPtr<CSGRotationTranslation> m_hook6;
+
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void OnGLDraw(CDC* pDC);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnAnimationStart();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
