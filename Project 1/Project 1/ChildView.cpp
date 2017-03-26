@@ -719,16 +719,22 @@ void CChildView::CreateSceneGraph()
 	CSGPtr<CSGRotationTranslation> right_arm = Create_Right_Arm();
 	CSGPtr<CSGRotationTranslation> left_leg = Create_Left_Leg();
 	CSGPtr<CSGRotationTranslation> right_leg = Create_Right_Leg();
+
+	///Components position
 	left_arm->SetTranslate(-1.0, 4, 1.5);
 	right_arm->SetTranslate(5.0, 4, 1.5);
 	head->SetTranslate(1.5, 8, 0.3);
 	left_leg->SetTranslate(1, -0.5, 1);
 	right_leg->SetTranslate(3, -0.5, 1);
+
+	///Add components as children of the body, which is the root
 	body->AddChild(left_arm);
 	body->AddChild(right_arm);
 	body->AddChild(head);
 	body->AddChild(left_leg);
 	body->AddChild(right_leg);
+
+	
 	m_scenegraph = body;
 	m_hook1 = left_arm;
 	m_hook3 = right_arm;
