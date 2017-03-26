@@ -10,6 +10,11 @@ public:
     ~CSGRotationTranslation(void);
 
     void SetRotate(double angle, double rx, double ry, double rz) {m_angle = angle; m_rx = rx; m_ry = ry; m_rz = rz;}
+	double GetRotateX() { return m_rx; };
+	double GetRotateY() { return m_ry; };
+	double GetRotateZ() { return m_rz; };
+	double getAngle() { return m_angle; };
+
     void SetTranslate(double tx, double ty, double tz) {m_tx = tx; m_ty = ty; m_tz = tz;}
     void AddChild(CSGNode *child) {m_children.push_back(child);}
 

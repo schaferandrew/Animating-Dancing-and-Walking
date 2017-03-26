@@ -1,16 +1,24 @@
 //
-// Name :         OpenGLWnd.cpp
-// Description :  Implementation for the COpenGLWnd class.  This is a
-//                class derived from CWnd that will automatically set up
-//                for OpenGL.  You can use this wherever you would use
-//                CWnd and you'll automatically have OpenGL in this window.
-// Author :       Charles B. Owen
-// Version :       1-09-01 1.00 CBO Initial version number.
-//                 3-03-03 1.01 CBO Improved error handing.
-//                 3-16-03 1.02 CBO Fixed problem with saving image
-//                 1-10-11 1.03 CBO Some cleanup prior to the semester
-//				   1-13-14 YT setting double-buffering as default and a few minor changes
+// Name :          OpenGLWnd.cpp
+// Documentation : See OpenGLWnd.h
+// Description :   Implementation for the COpenGLWnd class.  This is a
+//                 class derived from CWnd that will automatically set up
+//                 for OpenGL.  You can use this whereever you would use
+//                 CWnd and you'll automatically have OpenGL in this window.
+// Version :       See OpenGLWnd.h
 //
+
+
+///
+/// \mainpage CSE 472 Library Classes
+///
+/// This is the documentation for the CSE 472 library classes. These classes are available
+/// to use in projects or assignments in 
+/// <a href="https://www.cse.msu.edu/~cse472/secure/">CSE 472</a>. 
+///
+/// \par
+/// This documentation is generated from sources using Doxygen.
+///
 
 
 #include "stdafx.h"
@@ -31,6 +39,8 @@ COpenGLWnd::COpenGLWnd()
     m_pPal = NULL ;
     m_doublebuffer = true;
     m_created = false;
+    m_stencilBits = 0;
+    m_stereo = true;
 }
 
 COpenGLWnd::~COpenGLWnd()
@@ -51,6 +61,7 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // COpenGLWnd message handlers
+//! \cond SPECIAL
 
 BOOL COpenGLWnd::PreCreateWindow(CREATESTRUCT& cs) 
 {
@@ -76,8 +87,7 @@ int COpenGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
     pfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR); 
     pfd.nVersion   = 1 ; 
-    pfd.dwFlags    = PFD_SUPPORT_OPENGL |
-        PFD_DRAW_TO_WINDOW ;
+    pfd.dwFlags    = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW ;
 
     if(m_doublebuffer)
         pfd.dwFlags |= PFD_DOUBLEBUFFER;
@@ -85,8 +95,10 @@ int COpenGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = 24 ;
     pfd.cAlphaBits = 8;
-    pfd.cDepthBits = 32 ;
     pfd.iLayerType = PFD_MAIN_PLANE ;
+
+    pfd.cStencilBits = m_stencilBits;
+    pfd.cDepthBits = 32 - m_stencilBits;
 
     int nPixelFormat = ChoosePixelFormat(dc.m_hDC, &pfd);
     if (nPixelFormat == 0)
@@ -176,6 +188,7 @@ BOOL COpenGLWnd::CreateRGBPalette(HDC hDC)
     return bResult;
 }
 
+//! \endcond
 
 //////////////////////////////////////////////////////////////////////////////////////
 //
@@ -249,6 +262,7 @@ unsigned char COpenGLWnd::ComponentFromIndex(int i, UINT nbits, UINT shift)
     }
 }
 
+//! \cond SPECIAL
 
 void COpenGLWnd::OnPaint() 
 {
@@ -287,6 +301,9 @@ void COpenGLWnd::OnPaint()
 	// Draw	
 	OnGLDraw(&dc);
 
+    // Flush
+    glFlush();
+
 	//Swap Buffers
 	if(m_doublebuffer)
       SwapBuffers(dc.m_hDC) ;
@@ -297,6 +314,13 @@ void COpenGLWnd::OnPaint()
 
 	wglMakeCurrent(NULL, NULL) ;
 }
+
+BOOL COpenGLWnd::OnEraseBkgnd(CDC* pDC) 
+{
+	return true;
+}
+
+//! \endcond
 
 
 void COpenGLWnd::SetDoubleBuffer(bool p_doublebuffer)
@@ -316,10 +340,8 @@ void COpenGLWnd::SetDoubleBuffer(bool p_doublebuffer)
 
 void COpenGLWnd::OnGLDraw(CDC *pDC)
 {
-   glClearColor(0.3f, 0.7f, 0.3f, 0.0f) ;
+   glClearColor(0.0f, 1.0f, 1.0f, 0.0f) ;
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   glFlush();
 }
 
 //
@@ -336,11 +358,22 @@ void COpenGLWnd::GetSize(int &p_width, int &p_height)
    p_height = rect.bottom;
 }
 
-
-BOOL COpenGLWnd::OnEraseBkgnd(CDC* pDC) 
+int COpenGLWnd::GetWidth()
 {
-	return true;
+   RECT rect;
+   GetClientRect(&rect);
+   return rect.right;
 }
+
+int COpenGLWnd::GetHeight()
+{
+   RECT rect;
+   GetClientRect(&rect);
+   return rect.bottom;
+}
+
+
+
 
 #define DIB_HEADER_MARKER   ((WORD) ('M' << 8) | 'B')
 const int DIB_PADSIZE = 4;
