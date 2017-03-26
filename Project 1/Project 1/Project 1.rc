@@ -126,6 +126,7 @@ BEGIN
     POPUP "&Animation"
     BEGIN
         MENUITEM "&Start",                      ID_ANIMATION_START
+        MENUITEM "&Walk",                       ID_ANIMATION_WALK
     END
 END
 

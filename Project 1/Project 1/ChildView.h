@@ -52,6 +52,8 @@ private:
 	CSGPtr<CSGRotationTranslation> m_hook5;
 	CSGPtr<CSGRotationTranslation> m_hook6;
 	CSGPtr<CSGRotationTranslation> m_hook7;
+	CSGPtr<CSGRotationTranslation> m_hook8;
+	CSGPtr<CSGRotationTranslation> m_hook9;
 	double m_angle1;
 	double m_angle2;
 	double m_angle3;
@@ -59,6 +61,9 @@ private:
 	double m_angle5;
 	double m_angle6;
 	double m_angle7;
+	double m_angle8;
+	double m_angle9;
+	
 	int m_phase;
 
 protected:
@@ -69,5 +74,6 @@ public:
 	afx_msg void OnAnimationStart();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnAnimationWalk();
 };
 

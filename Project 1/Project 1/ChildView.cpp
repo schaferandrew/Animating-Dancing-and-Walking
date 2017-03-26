@@ -23,6 +23,8 @@ CChildView::CChildView()
 	m_angle5 = 0;
 	m_angle6 = 0;
 	m_angle7 = 0;
+	m_angle8 = 0;
+	m_angle9 = 0;
 
 	m_phase = 1;
 
@@ -43,6 +45,7 @@ BEGIN_MESSAGE_MAP(CChildView, COpenGLWnd)
 	ON_COMMAND(ID_ANIMATION_START, &CChildView::OnAnimationStart)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
+	ON_COMMAND(ID_ANIMATION_WALK, &CChildView::OnAnimationWalk)
 END_MESSAGE_MAP()
 
 
@@ -525,7 +528,7 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Left_Leg()
 	CGrVector g2(1.25, 1.25, 0);
 	CGrVector h2(0, 1.25, 0);
 
-	CSGPtr<CSGRotationTranslation> knee = new CSGRotationTranslation();
+	CSGPtr<CSGRotationTranslation> left_knee = new CSGRotationTranslation();
 	CSGPtr<CSGPolygon> elbow1 = new CSGPolygon(); //it's called elbow because I'm too lazy to switch it.
 	CSGPtr<CSGPolygon> elbow2 = new CSGPolygon();
 	CSGPtr<CSGPolygon> elbow3 = new CSGPolygon();
@@ -569,12 +572,12 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Left_Leg()
 	elbow6->AddVertex(a2);
 	elbow6->ComputeNormal();
 
-	knee->AddChild(elbow1);
-	knee->AddChild(elbow2);
-	knee->AddChild(elbow3);
-	knee->AddChild(elbow4);
-	knee->AddChild(elbow5);
-	knee->AddChild(elbow6);
+	left_knee->AddChild(elbow1);
+	left_knee->AddChild(elbow2);
+	left_knee->AddChild(elbow3);
+	left_knee->AddChild(elbow4);
+	left_knee->AddChild(elbow5);
+	left_knee->AddChild(elbow6);
 
 	CSGPtr<CSGRotationTranslation> legbot = new CSGRotationTranslation();
 	CSGPtr<CSGPolygon> lega = new CSGPolygon();
@@ -629,16 +632,18 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Left_Leg()
 
 
 	leg->SetTranslate(-0.25, -4, -0.25);
-	knee->SetTranslate(-.15, -0.75, -.1);
+	left_knee->SetTranslate(-.15, -0.75, -.1);
 	legbot->SetTranslate(0.15, -4, .1);
 
 	root->AddChild(leg);
-	leg->AddChild(knee);
-	knee->AddChild(legbot);
+	leg->AddChild(left_knee);
+	left_knee->AddChild(legbot);
 
 	leg->SetTranslate(-0.25, -4, -0.25);
 
 	root->AddChild(leg);
+
+	m_hook9 = left_knee;
 	return root;
 }
 
@@ -889,6 +894,8 @@ CSGPtr<CSGRotationTranslation> CChildView::Create_Right_Leg()
 	leg->SetTranslate(-0.25, -4, -0.25);
 
 	root->AddChild(leg);
+
+	m_hook8 = right_knee;
 	return root;
 }
 
@@ -1036,6 +1043,12 @@ void CChildView::OnGLDraw(CDC* pDC)
 		m_hook2->SetRotate(m_angle1, 1, 0, -1);
 		m_hook3->SetRotate(m_angle3, 1, 1, 0);
 	}
+	else if (m_phase == 7 || m_phase == 8 || m_phase == 9 || m_phase == 10) {
+		m_hook6->SetRotate(m_angle6, 1, 0, 0);
+		m_hook7->SetRotate(m_angle7, 1, 0, 0);
+		m_hook8->SetRotate(m_angle8, 1, 0, 0);
+		m_hook9->SetRotate(m_angle9, 1, 0, 0);
+	}
 
 	m_scenegraph->Render();
 }
@@ -1082,22 +1095,54 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		m_angle5 -= 1;
 		m_angle6 -= 1;
 	}
-	/*m_spinAngle += 5;		// 5 degrees every 30ms about
+	else if (m_phase == 7) {
+		/*
+		6 = left leg
+		7 = right leg
+		8 = right knee
+		9 = left knee
+		*/
 
-	//hook3 which is  left shoulder
-	if (m_angle3 > 120)
-	{
-		m_diff3 = -5;
+		m_angle6 -= 2;
+		m_angle7 += 2;
+		m_angle9 -= 1;
+		if (m_angle6 < -40)
+		{
+			m_phase = 8;
+		}
 	}
-	else if (m_angle3 <= 0)
-	{
-		m_diff3 = 5;
+	else if (m_phase == 8) {
+		m_angle6 += 2;
+		m_angle7 -= 2;
+		m_angle8 += .5;
+
+		if (m_angle6 > 0 )
+		m_phase = 9;
 	}
-	m_angle1 += m_diff1;			
-	m_angle2 += m_diff2;			//hook2 (left shoulder)
-	m_angle3 += m_diff3;			//hook3 (right arm)
-	m_angle4 += m_diff4;			//hook4 (right shoulder)
-	m_angle5 += m_diff5;			//hook5 (head)*/
+	else if (m_phase == 9) {
+		m_angle6 += 2;
+		m_angle7 -= 2;
+		m_angle9 += 0.5;
+		m_angle8 += .5;
+		if (m_angle6 > 40)
+		{
+			m_phase = 10;
+		}
+		
+	}
+	else if (m_phase == 10) {
+
+		m_angle6 -= 2;
+		m_angle7 += 2;
+		m_angle9 += .5;
+		m_angle8 -= 1.;
+		if (m_angle6 < 0)
+		{
+			m_phase = 7;
+		}
+		
+	}
+	
 	Invalidate();
 
 	COpenGLWnd::OnTimer(nIDEvent);
@@ -1117,6 +1162,7 @@ void CChildView::OnAnimationStart()
 		KillTimer(m_spinTimer);
 		m_spinTimer = 0;
 	}
+	m_phase = 1;
 }
 
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -1133,4 +1179,22 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 		Invalidate();
 
 	COpenGLWnd::OnMouseMove(nFlags, point);
+}
+
+
+void CChildView::OnAnimationWalk()
+{
+	if (m_spinTimer == 0)
+	{
+		// Create the timer
+		m_spinTimer = SetTimer(1, 30, NULL);
+	}
+	else
+	{
+		// Destroy the timer
+		KillTimer(m_spinTimer);
+		m_spinTimer = 0;
+	}
+	m_phase = 7;
+	m_angle9 = 20;
 }
