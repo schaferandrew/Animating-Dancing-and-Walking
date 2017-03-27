@@ -1164,8 +1164,15 @@ void CChildView::OnAnimationStart()
 	{
 		// Create the timer
 		m_spinTimer = SetTimer(1, 30, NULL);
-		m_angle1 = 0;
-		m_angle4 = 0;
+		m_hook1->SetRotate(0, 1, 0, 0);
+		m_hook2->SetRotate(0, 0, 1, 0);
+		m_hook3->SetRotate(0, 1, 0, 0);
+		m_hook4->SetRotate(90, 1, 0, 0);
+		m_hook5->SetRotate(0, 0, 1, 0);
+		m_hook6->SetRotate(0, 0, 0, -1);
+		m_hook7->SetRotate(0, 1, 0, 0);
+		m_hook8->SetRotate(0, 1, 0, 0);
+		m_hook9->SetRotate(0, 1, 0, 0);
 	}
 	else
 	{
@@ -1199,6 +1206,15 @@ void CChildView::OnAnimationWalk()
 	{
 		// Create the timer
 		m_spinTimer = SetTimer(1, 30, NULL);
+		m_hook1->SetRotate(0, 1, 0, 0);
+		m_hook2->SetRotate(0, 0, 1, 0);
+		m_hook3->SetRotate(0, 1, 0, 0);
+		m_hook4->SetRotate(90, 1, 0, 0);
+		m_hook5->SetRotate(0, 0, 1, 0);
+		m_hook6->SetRotate(0, 0, 0, -1);
+		m_hook7->SetRotate(0, 1, 0, 0);
+		m_hook8->SetRotate(0, 1, 0, 0);
+		m_hook9->SetRotate(0, 1, 0, 0);
 		m_angle1 = 180;
 		m_angle4 = 180;
 	}
