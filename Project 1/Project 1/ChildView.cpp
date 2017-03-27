@@ -1044,6 +1044,8 @@ void CChildView::OnGLDraw(CDC* pDC)
 		m_hook3->SetRotate(m_angle3, 1, 1, 0);
 	}
 	else if (m_phase == 7 || m_phase == 8 || m_phase == 9 || m_phase == 10) {
+		m_hook1->SetRotate(m_angle1, 1, 0, 0);
+		m_hook4->SetRotate(m_angle4, 1, 0, 0);
 		m_hook6->SetRotate(m_angle6, 1, 0, 0);
 		m_hook7->SetRotate(m_angle7, 1, 0, 0);
 		m_hook8->SetRotate(m_angle8, 1, 0, 0);
@@ -1103,6 +1105,8 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		9 = left knee
 		*/
 
+		m_angle1 -= 2;
+		m_angle4 += 2;
 		m_angle6 -= 2;
 		m_angle7 += 2;
 		m_angle9 -= 1;
@@ -1112,6 +1116,8 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		}
 	}
 	else if (m_phase == 8) {
+		m_angle1 += 2;
+		m_angle4 -= 2;
 		m_angle6 += 2;
 		m_angle7 -= 2;
 		m_angle8 += .5;
@@ -1120,6 +1126,8 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		m_phase = 9;
 	}
 	else if (m_phase == 9) {
+		m_angle1 += 2;
+		m_angle4 -= 2;
 		m_angle6 += 2;
 		m_angle7 -= 2;
 		m_angle9 += 0.5;
@@ -1131,7 +1139,8 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 		
 	}
 	else if (m_phase == 10) {
-
+		m_angle1 -= 2;
+		m_angle4 += 2;
 		m_angle6 -= 2;
 		m_angle7 += 2;
 		m_angle9 += .5;
@@ -1155,6 +1164,8 @@ void CChildView::OnAnimationStart()
 	{
 		// Create the timer
 		m_spinTimer = SetTimer(1, 30, NULL);
+		m_angle1 = 0;
+		m_angle4 = 0;
 	}
 	else
 	{
@@ -1188,6 +1199,8 @@ void CChildView::OnAnimationWalk()
 	{
 		// Create the timer
 		m_spinTimer = SetTimer(1, 30, NULL);
+		m_angle1 = 180;
+		m_angle4 = 180;
 	}
 	else
 	{
